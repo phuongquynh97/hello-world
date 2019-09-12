@@ -1,90 +1,96 @@
-# Welcome to GitHub
+<img src="http://griddb.org/Image/GridDB_logo.png" align="center" height="48" alt="GridDB"/>
 
-Welcome to GitHub—where millions of developers work together on software. Ready to get started? Let’s learn how this all works by building and publishing your first GitHub Pages website!
+[![Visit Website](https://img.shields.io/badge/website-visit-orange.svg)](https://griddb.net) 
+![GitHub All Releases](https://img.shields.io/github/downloads/griddb/griddb_nosql/total.svg) 
+![GitHub release](https://img.shields.io/github/release/griddb/griddb_nosql.svg)
+## Overview
+  GridDB has a KVS (Key-Value Store)-type data model that is suitable for sensor data stored in a timeseries. It is a database that can be easily scaled-out according to the number of sensors.
 
-## Repositories
+  * High Reliability  
+    It is equipped with a structure to spread out the replication of key value data among fellow nodes so that in the event of a node failure, automatic failover can be carried out in a matter of seconds by using the replication function of other nodes.
 
-Right now, we’re in your first GitHub **repository**. A repository is like a folder or storage space for your project. Your project's repository contains all its files such as code, documentation, images, and more. It also tracks every change that you—or your collaborators—make to each file, so you can always go back to previous versions of your project if you make any mistakes.
+  * High Performance (in-memory)  
+   Even if the memory is increased to handle big data in a RDB, it is known that CPU power cannot be fully exploited and only around 10% of CPU resources are allocated to actual data processing due to the large overhead in buffer management, etc. Given the increase in memory size, GridDB minimizes the amount of overheads required previously by lightening the buffer process and recovery process, and by making it lock-free during data processing.
 
-This repository contains three important files: The HTML code for your first website on GitHub, the CSS stylesheet that decorates your website with colors and fonts, and the **README** file. It also contains an image folder, with one image file.
+  * Advanced data model and operation model  
+    In a traditional distributed KVS, data is handled using operations such as Put/Get/Remove. GridDB expands these functions greatly to support the definition function for organizational data, SQL-like query function, transaction function and Java API (Application Programming Interface) so that RDB users are able to introduce the system smoothly. The key value represents the data in a set of records known as a key container. This is similar to the relationship between a RDB table name and table. It is also equipped with an application function for sensor data management.
 
-## Describe your project
+  This repository includes server and Java client.
 
-You are currently viewing your project's **README** file. **_README_** files are like cover pages or elevator pitches for your project. They are written in plain text or [Markdown language](https://guides.github.com/features/mastering-markdown/), and usually include a paragraph describing the project, directions on how to use it, who authored it, and more.
+  (Additional infomation)  
+  There is [Java client Package (Jar) for v4.0.0 on Maven Central Repository](https://search.maven.org/search?q=g:com.github.griddb) .
 
-[Learn more about READMEs](https://help.github.com/en/articles/about-readmes)
+## Quick start
+### Build a server and client(Java)
+    We have confirmed the operation on CentOS 7.6 (gcc 4.8.5) and Ubuntu 18.04(gcc 4.8.5).
 
-## Your first website
+    $ ./bootstrap.sh
+    $ ./configure
+    $ make 
+    
+### Start a server
+    $ export GS_HOME=$PWD
+    $ export GS_LOG=$PWD/log
 
-**GitHub Pages** is a free and easy way to create a website using the code that lives in your GitHub repositories. You can use GitHub Pages to build a portfolio of your work, create a personal website, or share a fun project that you coded with the world. GitHub Pages is automatically enabled in this repository, but when you create new repositories in the future, the steps to launch a GitHub Pages website will be slightly different.
+    $ bin/gs_passwd admin
+      #input your_password
+    $ vi conf/gs_cluster.json
+      #    "clusterName":"your_clustername" #<-- input your_clustername
+    $ export no_proxy=127.0.0.1
+    $ bin/gs_startnode
+    $ bin/gs_joincluster -c your_clustername -u admin/your_password
 
-[Learn more about GitHub Pages](https://pages.github.com/)
+### Execute a sample program
+    $ export CLASSPATH=${CLASSPATH}:$GS_HOME/bin/gridstore.jar
+    $ mkdir gsSample
+    $ cp $GS_HOME/docs/sample/program/Sample1.java gsSample/.
+    $ javac gsSample/Sample1.java
+    $ java gsSample/Sample1 239.0.0.1 31999 your_clustername admin your_password
+      --> Person:  name=name02 status=false count=2 lob=[65, 66, 67, 68, 69, 70, 71, 72, 73, 74]
 
-## Rename this repository to publish your site
+## Document
+  Refer to the file below for more detailed information.  
+  The documents below are stored in the docs folder.
+  - [GridDB Technical Design Document](https://griddb.github.io/griddb_nosql/manual/GridDBTechnicalDesignDocument.pdf)  (manual/GridDBTechnicalDesignDocument.pdf)
+  - [Quick Start Guide](https://griddb.github.io/griddb_nosql/manual/GridDB_QuickStartGuide.html) (manual/GridDB_QuickStartGuide.html)
+  - [API Reference](https://griddb.github.io/griddb_nosql/manual/GridDB_API_Reference.html) (manual/GridDB_API_Reference.html)
+  - [RPM Installation Guide](https://griddb.github.io/griddb_nosql/manual/GridDB_RPM_InstallGuide.html) (manual/GridDB_RPM_InstallGuide.html)
+  - [V3.0 Release Notes](docs/GridDB-3.0.0-CE-RELEASE_NOTES.md) (GridDB-3.0.0-CE-RELEASE_NOTES.md)
+  - [V4.0 Release Notes](docs/GridDB-4.0-CE-RELEASE_NOTES.md) (GridDB-4.0-CE-RELEASE_NOTES.md)
+  - [V4.1 Release Notes](docs/GridDB-4.1-CE-RELEASE_NOTES.md) (GridDB-4.1-CE-RELEASE_NOTES.md)
+  - [V4.2 Release Notes](docs/GridDB-4.2-CE-RELEASE_NOTES.md) (GridDB-4.2-CE-RELEASE_NOTES.md)
+  - [DEB Installation Guide](https://griddb.github.io/griddb_nosql/manual/GridDB_DEB_InstallGuide.html) (manual/GridDB_DEB_InstallGuide.html)
 
-We've already set-up a GitHub Pages website for you, based on your personal username. This repository is called `hello-world`, but you'll rename it to: `username.github.io`, to match your website's URL address. If the first part of the repository doesn’t exactly match your username, it won’t work, so make sure to get it right.
+## Client and Connector
+  There are other clients and API for GridDB.
+  * [GridDB C Client](https://github.com/griddb/c_client)
+  * [GridDB Python Client](https://github.com/griddb/python_client)
+  * [GridDB Ruby Client](https://github.com/griddb/ruby_client)
+  * [GridDB Go Client](https://github.com/griddb/go_client)
+  * [GridDB Node.JS Client](https://github.com/griddb/nodejs_client)
+  * [GridDB PHP Client](https://github.com/griddb/php_client)
+  * [GridDB Perl Client](https://github.com/griddb/perl_client)
+  * [GridDB WebAPI](https://github.com/griddb/webapi)
 
-Let's get started! To update this repository’s name, click the `Settings` tab on this page. This will take you to your repository’s settings page. 
+  There are some connectors for other OSS.
+  * [GridDB connector for Apache Hadoop MapReduce](https://github.com/griddb/griddb_hadoop_mapreduce)
+  * [GridDB connector for YCSB (https://github.com/brianfrankcooper/YCSB/tree/master/griddb)](https://github.com/brianfrankcooper/YCSB/tree/master/griddb)
+  * [GridDB connector for KairosDB](https://github.com/griddb/griddb_kairosdb)
+  * [GridDB connector for Apache Spark](https://github.com/griddb/griddb_spark)
+  * [GridDB Foreign Data Wrapper for PostgreSQL (https://github.com/pgspider/griddb_fdw)](https://github.com/pgspider/griddb_fdw)
+  * [GridDB Sample Application for Apache Kafka](https://github.com/griddb/griddb_kafka_sample_app)
+  * [GridDB Data Source for Grafana](https://github.com/griddb/griddb-datasource)
 
-![repo-settings-image](https://user-images.githubusercontent.com/18093541/63130482-99e6ad80-bf88-11e9-99a1-d3cf1660b47e.png)
+## Community
+  * Issues  
+    Use the GitHub issue function if you have any requests, questions, or bug reports. 
+  * PullRequest  
+    Use the GitHub pull request function if you want to contribute code.
+    You'll need to agree GridDB Contributor License Agreement(CLA_rev1.1.pdf).
+    By using the GitHub pull request function, you shall be deemed to have agreed to GridDB Contributor License Agreement.
 
-Under the **Repository Name** heading, type: `username.github.io`, where username is your username on GitHub. Then click **Rename**—and that’s it. When you’re done, click your repository name or browser’s back button to return to this page.
+## License
+  The server source license is GNU Affero General Public License (AGPL), 
+  while the Java client library license and the operational commands is Apache License, version 2.0.
+  See 3rd_party/3rd_party.md for the source and license of the third party.
 
-<img width="1039" alt="rename_screenshot" src="https://user-images.githubusercontent.com/18093541/63129466-956cc580-bf85-11e9-92d8-b028dd483fa5.png">
-
-Once you click **Rename**, your website will automatically be published at: https://your-username.github.io/. The HTML file—called `index.html`—is rendered as the home page and you'll be making changes to this file in the next step.
-
-Congratulations! You just launched your first GitHub Pages website. It's now live to share with the entire world
-
-## Making your first edit
-
-When you make any change to any file in your project, you’re making a **commit**. If you fix a typo, update a filename, or edit your code, you can add it to GitHub as a commit. Your commits represent your project’s entire history—and they’re all saved in your project’s repository.
-
-With each commit, you have the opportunity to write a **commit message**, a short, meaningful comment describing the change you’re making to a file. So you always know exactly what changed, no matter when you return to a commit.
-
-## Practice: Customize your first GitHub website by writing HTML code
-
-Want to edit the site you just published? Let’s practice commits by introducing yourself in your `index.html` file. Don’t worry about getting it right the first time—you can always build on your introduction later.
-
-Let’s start with this template:
-
-```
-<p>Hello World! I’m [username]. This is my website!</p>
-```
-
-To add your introduction, copy our template and click the edit pencil icon at the top right hand corner of the `index.html` file.
-
-<img width="997" alt="edit-this-file" src="https://user-images.githubusercontent.com/18093541/63131820-0794d880-bf8d-11e9-8b3d-c096355e9389.png">
-
-
-Delete this placeholder line:
-
-```
-<p>Welcome to your first GitHub Pages website!</p>
-```
-
-Then, paste the template to line 15 and fill in the blanks.
-
-<img width="1032" alt="edit-githuboctocat-index" src="https://user-images.githubusercontent.com/18093541/63132339-c3a2d300-bf8e-11e9-8222-59c2702f6c42.png">
-
-
-When you’re done, scroll down to the `Commit changes` section near the bottom of the edit page. Add a short message explaining your change, like "Add my introduction", then click `Commit changes`.
-
-
-<img width="1030" alt="add-my-username" src="https://user-images.githubusercontent.com/18093541/63131801-efbd5480-bf8c-11e9-9806-89273f027d16.png">
-
-Once you click `Commit changes`, your changes will automatically be published on your GitHub Pages website. Refresh the page to see your new changes live in action.
-
-:tada: You just made your first commit! :tada:
-
-## Extra Credit: Keep on building!
-
-Change the placeholder Octocat gif on your GitHub Pages website by [creating your own personal Octocat emoji](https://myoctocat.com/build-your-octocat/) or [choose a different Octocat gif from our logo library here](https://octodex.github.com/). Add that image to line 12 of your `index.html` file, in place of the `<img src=` link.
-
-Want to add even more code and fun styles to your GitHub Pages website? [Follow these instructions](https://github.com/github/personal-website) to build a fully-fledged static website.
-
-![octocat](./images/create-octocat.png)
-
-## Everything you need to know about GitHub
-
-Getting started is the hardest part. If there’s anything you’d like to know as you get started with GitHub, try searching [GitHub Help](https://help.github.com). Our documentation has tutorials on everything from changing your repository settings to configuring GitHub from your command line.
